@@ -13,7 +13,7 @@ if ENV['ansible_connection'] == 'winrm' then
   if ENV['ansible_port'] == '5986' then
     endpoint = "https://#{ENV['TARGET_HOST']}:5986/wsman"
   end
-  puts(endpoint)
+
   set :backend, :winrm
   opts = {
     user: ENV['ansible_user'],
@@ -28,7 +28,6 @@ if ENV['ansible_connection'] == 'winrm' then
   
 # linux
 else
-  puts('SSH1!!!!!')
   set :backend, :ssh
   host = ENV['TARGET_HOST']
   options = Net::SSH::Config.for(host)
