@@ -20,6 +20,7 @@ if ENV['ansible_connection'] == 'winrm' then
     password: ENV['ansible_password'],
     endpoint: endpoint,
     operation_timeout: 300,
+    no_ssl_peer_verification: true
   }
   puts("Test of #{ENV['TARGET_HOST']}")
   winrm = WinRM::Connection.new(opts)

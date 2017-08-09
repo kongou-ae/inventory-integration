@@ -36,8 +36,8 @@ namespace :spec do
 
   hosts.each do |host|
     desc "Run serverspec to hosts of #{host[:role]}"
-    RSpec::Core::RakeTask.new(host[:role].to_sym) do |t|
-      host[:server].each do |server|
+    host[:server].each do |server|
+      RSpec::Core::RakeTask.new(host[:role].to_sym) do |t|
         ENV['TARGET_ROLE'] = host[:role]
         ENV['TARGET_HOST'] = server[:name]
         ENV['ansible_user'] = server[:var]['ansible_user']
