@@ -1,0 +1,84 @@
+require 'rake'
+require 'rspec/core/rake_task'
+require 'ansible/vault'
+require 'yaml'
+
+print 'ansible-vault password: '
+system "stty -echo"
+password = $stdin.gets.chop
+system "stty echo"
+puts ''
+
+contents = Ansible::Vault.read(path: '../ansible/hosts.yml', password: password)
+inventory = YAML.load(contents)
+
+# build hash from hosts.yaml
+hosts = []
+i = 0
+inventory.each do |role,value|
+  hosts.push({
+    :role => role,
+    :server => [] #Array.new { Array.new }
+  })
+  value['hosts'].each do |host,variable|
+    hosts[i][:server].push({
+      :name => host,
+      :var => variable        
+    })
+  end
+  i = i + 1
+end
+
+namespace :spec do
+  desc "Run serverspec to all hosts"
+  task :all => hosts.map {|host| 'spec:' + host[:role]}
+  task :default  => :all
+
+  hosts.each do |host|
+    desc "Run serverspec to hosts of #{host[:role]}"
+    RSpec::Core::RakeTask.new(host[:role].to_sym) do |t|
+      host[:server].each do |server|
+        ENV['TARGET_ROLE'] = host[:role]
+        ENV['TARGET_HOST'] = server[:name]
+        ENV['ansible_user'] = server[:var]['ansible_user']
+        ENV['ansible_password'] = server[:var]['ansible_password']
+        
+        # windows対応
+        if server[:var].has_key?('ansible_connection') then
+          if server[:var]['ansible_connection'] == 'winrm' then
+            ENV['ansible_port'] = server[:var]['ansible_port'].to_s
+            ENV['ansible_connection'] = server[:var]['ansible_connection']
+            ENV['ansible_winrm_server_cert_validation'] = server[:var]['ansible_winrm_server_cert_validation']
+          end
+        end
+          
+        t.pattern = 'spec/{' + host[:role] + '}/*_spec.rb'
+      end
+    end
+  end
+  
+  hosts.each do |host|
+    namespace host[:role] do
+      host[:server].each do |server|
+        desc "Run serverspec to #{server[:name]}"
+        RSpec::Core::RakeTask.new(server[:name].to_sym) do |t|
+          ENV['TARGET_ROLE'] = host[:role]
+          ENV['TARGET_HOST'] = server[:name]
+          ENV['ansible_user'] = server[:var]['ansible_user']
+          ENV['ansible_password'] = server[:var]['ansible_password']
+
+          # windows対応
+          if server[:var].has_key?('addnsible_port') then
+            if server[:var]['ansible_port'] == 5985 || server[:var]['ansible_port'] == 5986 then
+              ENV['ansible_port'] = server[:var]['ansible_port']
+              ENV['ansible_connection'] = server[:var]['ansible_connection']
+              ENV['ansible_port'] = server[:var]['ansible_port']
+            end
+          end
+        
+          t.pattern = 'spec/{' + host[:role] + '}/*_spec.rb'
+        end
+      end
+    end
+  end
+end
