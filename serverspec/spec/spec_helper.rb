@@ -2,8 +2,6 @@ require 'serverspec'
 require 'net/ssh'
 require 'winrm'
 
-
-puts(ENV['ansible_connection'])
 # Windows
 if ENV['ansible_connection'] == 'winrm' then
 
