@@ -44,7 +44,8 @@ namespace :spec do
         ENV['ansible_password'] = server[:var]['ansible_password']
         
         # windows対応
-        if server[:var].has_key?('ansible_connection') then
+        puts(server[:var].has_key?('ansible_connection'))
+        if server[:var].has_key?('ansible_connection') == true then
           if server[:var]['ansible_connection'] == 'winrm' then
             ENV['ansible_port'] = server[:var]['ansible_port'].to_s
             ENV['ansible_connection'] = server[:var]['ansible_connection']
