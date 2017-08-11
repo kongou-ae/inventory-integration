@@ -1,0 +1,9 @@
+- name: pingモジュール実行
+  win_ping:
+  
+- name: display hostname
+  win_command: hostname
+  register: result
+ 
+- debug: var=result.stdout_lines
+  

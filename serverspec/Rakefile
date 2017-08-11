@@ -3,16 +3,21 @@ require 'rspec/core/rake_task'
 require 'ansible/vault'
 require 'yaml'
 
-print 'ansible-vault password: '
-system "stty -echo"
-password = $stdin.gets.chop
-system "stty echo"
-puts ''
+# whether hosts is encrypt or not.
+if File.open('../ansible/hosts.yml').read.include?('$ANSIBLE_VAULT;') == true then
+  print 'Rakefile: innput the password of ansible-vault: '
+  system "stty -echo"
+  password = $stdin.gets.chop
+  system "stty echo"
+  puts ''
+  contents = Ansible::Vault.read(path: '../ansible/hosts.yml', password: password)
+else
+  contents = File.open('../ansible/hosts.yml').read
+end
 
-contents = Ansible::Vault.read(path: '../ansible/hosts.yml', password: password)
-inventory = YAML.load(contents)
 
 # build hash from hosts.yaml
+inventory = YAML.load(contents)
 hosts = []
 i = 0
 inventory.each do |role,value|
@@ -42,9 +47,10 @@ namespace :spec do
         ENV['TARGET_HOST'] = server[:name]
         ENV['ansible_user'] = server[:var]['ansible_user']
         ENV['ansible_password'] = server[:var]['ansible_password']
+        # for inporting the variable by spec_helper 
+        ENV['ansible_role'] = host[:role]
         
-        # windows対応
-        puts(server[:var].has_key?('ansible_connection'))
+        # support windows
         if server[:var].has_key?('ansible_connection') == true then
           if server[:var]['ansible_connection'] == 'winrm' then
             ENV['ansible_port'] = server[:var]['ansible_port'].to_s
@@ -67,13 +73,15 @@ namespace :spec do
           ENV['TARGET_HOST'] = server[:name]
           ENV['ansible_user'] = server[:var]['ansible_user']
           ENV['ansible_password'] = server[:var]['ansible_password']
+          # for inporting the variable by spec_helper 
+          ENV['ansible_role'] = host[:role]
 
-          # windows対応
+          # support windows
           if server[:var].has_key?('ansible_connection') == true then
             if server[:var]['ansible_connection'] == 'winrm' then
-              ENV['ansible_port'] = server[:var]['ansible_port']
+              ENV['ansible_port'] = server[:var]['ansible_port'].to_s
               ENV['ansible_connection'] = server[:var]['ansible_connection']
-              ENV['ansible_port'] = server[:var]['ansible_port']
+              ENV['ansible_winrm_server_cert_validation'] = server[:var]['ansible_winrm_server_cert_validation']
             end
           end
         
