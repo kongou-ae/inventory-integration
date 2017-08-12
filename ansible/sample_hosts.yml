@@ -1,0 +1,26 @@
+windows:
+  hosts:
+    13.78.121.xxx: 
+      ansible_user: hoge
+      ansible_password: huga
+      ansible_connection: winrm
+      ansible_port: 5985
+      ansible_winrm_server_cert_validation: ignore
+      ansible_winrm_transport: ssl
+    13.78.126.xxx:
+      ansible_user: hoge
+      ansible_password: huga
+      ansible_connection: winrm
+      ansible_port: 5985
+      ansible_winrm_server_cert_validation: ignore
+      ansible_winrm_transport: ssl
+  vars:
+    vara: good
+    varb: cute
+    
+
+linux:
+  hosts:
+    13.69.26.xxx:
+      ansible_user: hoge
+      ansible_password: huga
