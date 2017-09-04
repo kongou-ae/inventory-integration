@@ -4,15 +4,15 @@ require 'ansible/vault'
 require 'yaml'
 
 # whether hosts is encrypt or not.
-if File.open('../ansible/hosts.yml').read.include?('$ANSIBLE_VAULT;') == true then
+if File.open('./hosts.yml').read.include?('$ANSIBLE_VAULT;') == true then
   print 'Rakefile: innput the password of ansible-vault: '
   system "stty -echo"
   password = $stdin.gets.chop
   system "stty echo"
   puts ''
-  contents = Ansible::Vault.read(path: '../ansible/hosts.yml', password: password)
+  contents = Ansible::Vault.read(path: './hosts.yml', password: password)
 else
-  contents = File.open('../ansible/hosts.yml').read
+  contents = File.open('./hosts.yml').read
 end
 
 
@@ -28,11 +28,13 @@ inventory.each do |role,value|
   value['hosts'].each do |host,variable|
     hosts[i][:server].push({
       :name => host,
-      :var => variable        
+      :var => variable    
     })
   end
   i = i + 1
 end
+
+puts hosts
 
 namespace :spec do
   desc "Run serverspec to all hosts"

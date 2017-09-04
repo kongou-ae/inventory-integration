@@ -3,21 +3,31 @@ require 'net/ssh'
 require 'winrm'
 require 'ansible/vault'
 
-# whether hosts is encrypt or not.
-if File.open('../ansible/hosts.yml').read.include?('$ANSIBLE_VAULT;') == true then
-  print 'spec_helper: innput the password of ansible-vault: '
-  system "stty -echo"
-  password = $stdin.gets.chop
-  system "stty echo"
-  puts ''
-  contents = Ansible::Vault.read(path: '../ansible/hosts.yml', password: password)
-else
-  contents = File.open('../ansible/hosts.yml').read
-end
+vars = {}
 
-# inject property from hosts.yml
-properties = YAML.load(contents)
-set_property properties[ENV['ansible_role']]['vars']
+# inject the variables which set in roles directry
+Dir::foreach('roles') {|dir|
+  if dir == ENV['ansible_role'] then
+    Dir::foreach("roles/#{dir}/vars") {|f|
+      if f =~ /.yml/ then
+        vars = YAML.load(File.open("roles/#{dir}/vars/#{f}").read)
+      end  
+    }
+  end    
+}
+
+# inject the variables which set in group vars
+Dir::foreach('group_vars') {|file|
+  if file == "all.yml" then
+    vars = vars.merge(YAML.load(File.open("group_vars/all.yml").read))
+  end
+  
+  if file == "#{ENV['ansible_role']}.yml" then
+    vars = vars.merge(YAML.load(File.open("group_vars/#{ENV['ansible_role']}.yml").read))
+  end 
+}
+
+set_property vars
 
 # Windows
 if ENV['ansible_connection'] == 'winrm' then

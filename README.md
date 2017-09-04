@@ -7,6 +7,8 @@ Proof of Concept that serverspec uses the inventory of ansible.
 # Notes
 
 - You must write the inventory of ansible in yaml.
-- Only load the custom variables for role. Don't load the custom variables per host.
-- Serverspec expects that the inventory of ansible is on '../ansible/hosts.yml'. If the location of your hosts is not so, Please change 'Rakefile' and 'spec_helper.rb'
+- This script Loads the variables from following directory and file. 
+    - roles/[ansible's group name]/vars/main.yml
+    - group_vars/[ansible's group name].yml
+    - group_vars/all.yml
 - Support ansible-vault. But only support '--ask-vault-pass'. 
