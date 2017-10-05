@@ -8,6 +8,7 @@ if File.open('./hosts.yml').read.include?('$ANSIBLE_VAULT;') == true then
   print 'Rakefile: innput the password of ansible-vault: '
   system "stty -echo"
   password = $stdin.gets.chop
+  ENV['VAULT_PASS'] = password
   system "stty echo"
   puts ''
   contents = Ansible::Vault.read(path: './hosts.yml', password: password)
@@ -34,8 +35,6 @@ inventory.each do |role,value|
   i = i + 1
 end
 
-puts hosts
-
 namespace :spec do
   desc "Run serverspec to all hosts"
   task :all => hosts.map {|host| 'spec:' + host[:role]}
@@ -49,7 +48,16 @@ namespace :spec do
         ENV['TARGET_HOST'] = server[:name]
         ENV['ansible_user'] = server[:var]['ansible_user']
         ENV['ansible_password'] = server[:var]['ansible_password']
-        # for inporting the variable by spec_helper 
+        
+        if server[:var].has_key?('ansible_become_pass') == true then
+          ENV['ansible_become_pass'] = server[:var]['ansible_become_pass']
+        end   
+        
+        if server[:var].has_key?('ansible_ssh_private_key_file') == true then
+          ENV['ansible_ssh_private_key_file'] = server[:var]['ansible_ssh_private_key_file']
+        end  
+        
+        # for importing the variable by spec_helper 
         ENV['ansible_role'] = host[:role]
         
         # support windows
@@ -75,7 +83,16 @@ namespace :spec do
           ENV['TARGET_HOST'] = server[:name]
           ENV['ansible_user'] = server[:var]['ansible_user']
           ENV['ansible_password'] = server[:var]['ansible_password']
-          # for inporting the variable by spec_helper 
+
+          if server[:var].has_key?('ansible_become_pass') == true then
+            ENV['ansible_become_pass'] = server[:var]['ansible_become_pass']
+          end   
+          
+          if server[:var].has_key?('ansible_ssh_private_key_file') == true then
+            ENV['ansible_ssh_private_key_file'] = server[:var]['ansible_ssh_private_key_file']
+          end  
+
+          # for importing the variable by spec_helper 
           ENV['ansible_role'] = host[:role]
 
           # support windows
