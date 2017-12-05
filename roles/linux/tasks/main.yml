@@ -1,0 +1,11 @@
+- name: ping
+  local_action: shell ping 8.8.8.8 -c 4
+   
+- name: write inventry
+  local_action: shell python {{ inventory_dir }}/{{ inventory_file }} > hosts.yml
+
+- name: write inventry
+  local_action: shell dir
+
+- name: write inventry
+  local_action: shell cat hosts.yml
