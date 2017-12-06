@@ -1,13 +1,17 @@
 - name: ping
   local_action: shell ping 8.8.8.8 -c 4
 
-- name: write inventry
+- name: create inventry file
   local_action: shell python {{ inventory_dir }}/{{ inventory_file }} > hosts.json
 
-- name: write inventry
+- name: convert inventry from json to yaml
   local_action: shell ruby -ryaml -rjson -e 'puts YAML.dump(JSON.parse(STDIN.read))' < hosts.json > hosts.yml
 
-- name: write inventry
+- name: echo group
   local_action: shell echo {{ group_names[0] }}
-- name: write inventry
+
+- name: check inventry
   local_action: shell cat hosts.yml
+
+- name: serverspec
+  local_action: shell rake spec:{{ group_names[0] }}:{{ inventory_hostname }}
