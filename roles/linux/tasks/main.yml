@@ -8,7 +8,7 @@
   local_action: shell ruby -ryaml -rjson -e 'puts YAML.dump(JSON.parse(STDIN.read))' < hosts.json > hosts.yml
 
 - name: write inventry
-  local_action: shell echo {{ group_names }}
+  local_action: shell echo {{ group_names }}.encode()
 
 - name: write inventry
   local_action: shell cat hosts.yml
