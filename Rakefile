@@ -22,17 +22,19 @@ inventory = YAML.load(contents)
 hosts = []
 i = 0
 inventory.each do |role,value|
-  hosts.push({
-    :role => role,
-    :server => [] #Array.new { Array.new }
-  })
-  value['hosts'].each do |host,variable|
-    hosts[i][:server].push({
-      :name => host,
-      :var => variable    
+  if role != "_meta" then
+    hosts.push({
+      :role => role,
+      :server => [] #Array.new { Array.new }
     })
+    value['hosts'].each do |host,variable|
+      hosts[i][:server].push({
+        :name => host,
+        :var => variable    
+      })
+    end
+    i = i + 1
   end
-  i = i + 1
 end
 
 namespace :spec do
