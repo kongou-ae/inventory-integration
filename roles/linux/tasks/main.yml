@@ -5,7 +5,7 @@
   local_action: shell python {{ inventory_dir }}/{{ inventory_file }} > hosts.json
 
 - name: convert inventry from json to yaml
-  local_action: shell /bin/bash -lc "ruby -ryaml -rjson -e 'puts YAML.dump(JSON.parse(STDIN.read))' < hosts.json > hosts.yml"
+  local_action: shell ruby -ryaml -rjson -e 'puts YAML.dump(JSON.parse(STDIN.read))' < hosts.json > hosts.yml
 
 - name: echo group
   local_action: shell echo {{ group_names[0] }}
@@ -14,4 +14,4 @@
   local_action: shell cat hosts.yml
 
 - name: serverspec
-  local_action: shell /bin/bash -lc "rake spec:{{ group_names[0] }}:{{ inventory_hostname }}"
+  local_action: shell rake spec:{{ group_names[0] }}:{{ inventory_hostname }}
