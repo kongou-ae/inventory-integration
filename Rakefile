@@ -48,9 +48,10 @@ namespace :spec do
       RSpec::Core::RakeTask.new(host[:role].to_sym) do |t|
         ENV['TARGET_ROLE'] = host[:role]
         ENV['TARGET_HOST'] = server[:name]
-        ENV['ansible_user'] = server[:var]['ansible_user'] if server[:var]['ansible_user']
-        ENV['ansible_password'] = server[:var]['ansible_password'] if server[:var]['ansible_password']
-        
+        if server[:var]
+          ENV['ansible_user'] = server[:var]['ansible_user'] if server[:var]['ansible_user']
+          ENV['ansible_password'] = server[:var]['ansible_password'] if server[:var]['ansible_password']
+        end
         if server[:var].has_key?('ansible_become_pass') == true then
           ENV['ansible_become_pass'] = server[:var]['ansible_become_pass']
         end   
@@ -83,12 +84,10 @@ namespace :spec do
         RSpec::Core::RakeTask.new(server[:name].to_sym) do |t|
           ENV['TARGET_ROLE'] = host[:role]
           ENV['TARGET_HOST'] = server[:name]
-          puts server
-          puts server[:var]
-          puts server[:var]['ansible_user']
-          ENV['ansible_user'] = server[:var]['ansible_user'] if server[:var]['ansible_user']
-          ENV['ansible_password'] = server[:var]['ansible_password'] if server[:var]['ansible_password']
-
+          if server[:var]
+            ENV['ansible_user'] = server[:var]['ansible_user'] if server[:var]['ansible_user']
+            ENV['ansible_password'] = server[:var]['ansible_password'] if server[:var]['ansible_password']
+          end
           if server[:var].has_key?('ansible_become_pass') == true then
             ENV['ansible_become_pass'] = server[:var]['ansible_become_pass']
           end   
