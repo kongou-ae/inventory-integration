@@ -83,6 +83,9 @@ namespace :spec do
         RSpec::Core::RakeTask.new(server[:name].to_sym) do |t|
           ENV['TARGET_ROLE'] = host[:role]
           ENV['TARGET_HOST'] = server[:name]
+          puts server
+          puts server[:var]
+          puts server[:var]['ansible_user']
           ENV['ansible_user'] = server[:var]['ansible_user'] if server[:var]['ansible_user']
           ENV['ansible_password'] = server[:var]['ansible_password'] if server[:var]['ansible_password']
 
