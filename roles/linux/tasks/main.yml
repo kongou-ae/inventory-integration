@@ -1,19 +1,10 @@
-- name: ping
-  local_action: shell ping 8.8.8.8 -c 4
-
 - name: create inventry file
   local_action: shell python {{ inventory_dir }}/{{ inventory_file }} > hosts.json
 
 - name: convert inventry from json to yaml
   local_action: shell ruby -ryaml -rjson -e 'puts YAML.dump(JSON.parse(STDIN.read))' < hosts.json > hosts.yml
 
-- name: echo group
-  local_action: shell echo {{ group_names[0] }}
-
-- name: check inventry
-  local_action: shell cat hosts.yml
-
-- name: get username
+- name: get ansible real username
   local_action: shell tower-cli credential get `tower-cli job_template get {{ awx_job_template_id }} -f json | jq .credential` -f json | jq .inputs.username -r
   register: ansible_real_user
 
