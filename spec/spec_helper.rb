@@ -65,9 +65,12 @@ else
   set :backend, :ssh
   host = ENV['TARGET_HOST']
   options = Net::SSH::Config.for(host)
+  puts ENV['ansible_user']
   options[:user] = ENV['ansible_user']
   options[:password] = ENV['ansible_password'] if not ENV['ansible_password'].nil?
   options[:keys] = ENV['ansible_ssh_private_key_file'] if not ENV['ansible_ssh_private_key_file'].nil?
+  options[:paranoid] = false
+  options[:user_known_hosts_file] = '/dev/null'
   puts("Test for #{ENV['TARGET_HOST']}")
   set :host,        options[:host_name] || host
   set :ssh_options, options
