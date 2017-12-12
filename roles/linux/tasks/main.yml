@@ -11,7 +11,7 @@
 - name: serverspec
   environment:
     ansible_user: '{{ ansible_real_user.stdout }}'
-    ansible_pass: '{{ ansible_password }}'
+    ansible_password: '{{ ansible_password }}'
     ansible_port: '{{ ansible_port }}'
     ansible_connection: '{{ ansible_connection }}'
     ansible_winrm_server_cert_validation: '{{ ansible_winrm_server_cert_validation }}'
