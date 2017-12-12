@@ -5,7 +5,8 @@ require 'ansible/vault'
 
 vars = {}
 
-puts ENV
+puts ENV['ansible_become_pass']
+puts ENV['ansible_password']
 
 def read_with_vault(filename)
   if File.open(filename).read.include?('$ANSIBLE_VAULT;') == true then
