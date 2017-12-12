@@ -5,6 +5,8 @@ require 'ansible/vault'
 
 vars = {}
 
+puts ENV
+
 def read_with_vault(filename)
   if File.open(filename).read.include?('$ANSIBLE_VAULT;') == true then
     contents = Ansible::Vault.read(path: filename, password: ENV['VAULT_PASS'])
