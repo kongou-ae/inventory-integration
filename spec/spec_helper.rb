@@ -73,6 +73,4 @@ else
   set :ssh_options, options
   set :sudo_password, ENV['ansible_become_pass'] if not ENV['ansible_become_pass'].nil?
   puts("Test for #{ENV['TARGET_HOST']}")
-  winrm = WinRM::Connection.new(opts)
-  Specinfra.configuration.winrm = winrm
 end
