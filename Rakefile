@@ -65,9 +65,8 @@ namespace :spec do
         ENV['TARGET_ROLE'] = host[:role]
         ENV['TARGET_HOST'] = server[:name]
         ENV['ansible_role'] = host[:role]
-        if server[:var]
-          setEnvVar(server)
-        end
+        setEnvVar(server) if server[:var]
+        t.rspec_opts = ['--format documentation --color']
         t.pattern = 'spec/{' + host[:role] + '}/*_spec.rb'
       end
     end
@@ -81,9 +80,8 @@ namespace :spec do
           ENV['TARGET_ROLE'] = host[:role]
           ENV['TARGET_HOST'] = server[:name]
           ENV['ansible_role'] = host[:role]
-          if server[:var]
-            setEnvVar(server)
-          end
+          setEnvVar(server) if server[:var]
+          t.rspec_opts = ['--format documentation --color']
           t.pattern = 'spec/{' + host[:role] + '}/*_spec.rb'
         end
       end
