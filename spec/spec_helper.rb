@@ -62,6 +62,7 @@ if ENV['ansible_connection'] == 'winrm' then
   
 # linux
 else
+  set :disable_sudo, true
   set :backend, :ssh
   host = ENV['TARGET_HOST']
   options = Net::SSH::Config.for(host)
